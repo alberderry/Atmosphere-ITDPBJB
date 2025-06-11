@@ -1,7 +1,7 @@
 // src/pages/TRXFee.jsx
 
 import { Box } from "@chakra-ui/react"
-import TRXFeeComponent from "../components/TRXFeeComponent"
+import TRXFeeComponent from "../components/TRXFeeComponent.jsx"
 // Hapus import useState karena state ini sekarang dikelola di App.jsx
 // import { useState } from "react"; 
 

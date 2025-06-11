@@ -29,7 +29,7 @@ import {
   TableContainer,
   Flex,
 } from "@chakra-ui/react"
-import { getColorScheme, getTierColor } from "../../../utils/relocationUtils" // Import helpers
+import { getColorScheme, getTierColor } from "../../utils/relocationUtils" // Import helpers
 
 const CBAAnalysisResultCards = ({
   cardBg,

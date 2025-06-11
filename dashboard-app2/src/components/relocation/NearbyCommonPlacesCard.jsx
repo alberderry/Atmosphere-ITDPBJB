@@ -19,7 +19,7 @@ import {
   TabPanel,
   Badge,
 } from "@chakra-ui/react"
-import { getCommonPlaceIcon } from "../../../utils/relocationUtils" // Import helper
+import { getCommonPlaceIcon } from "../../utils/relocationUtils" // Import helper
 
 const NearbyCommonPlacesCard = ({
   cardBg,

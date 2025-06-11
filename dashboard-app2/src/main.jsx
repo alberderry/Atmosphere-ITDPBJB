@@ -1,9 +1,9 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App.jsx'
-import { AuthProvider } from './contexts/AuthContext.jsx'; // Import AuthProvider
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App.jsx';
+import { AuthProvider } from './contexts/AuthContext.jsx';
 
 const theme = extendTheme({
   colors: {
@@ -24,16 +24,47 @@ const theme = extendTheme({
     heading: 'Inter, sans-serif',
     body: 'Inter, sans-serif',
   }
-})
+});
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <BrowserRouter>
-        <AuthProvider> {/* Bungkus App dengan AuthProvider */}
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
-    </ChakraProvider>
-  </React.StrictMode>,
-)
+// Fungsi untuk load Google Maps API
+const loadGoogleMaps = () => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  return new Promise((resolve) => {
+    if (window.google && window.google.maps) {
+      resolve(); // Sudah dimuat
+      return;
+    }
+
+    window.initMap = () => resolve(); // Callback Google Maps
+
+    const existingScript = document.getElementById('google-maps-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'google-maps-script';
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  });
+};
+
+// Fungsi main untuk inisialisasi aplikasi
+async function main() {
+  await loadGoogleMaps();
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <ChakraProvider theme={theme}>
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
+      </ChakraProvider>
+    </React.StrictMode>,
+  );
+}
+
+main();

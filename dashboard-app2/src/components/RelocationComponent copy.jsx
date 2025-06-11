@@ -53,7 +53,7 @@ import { SearchIcon, InfoIcon, CheckIcon } from "@chakra-ui/icons"
 // Google Maps API Key untuk penggunaan di frontend (memuat script peta dan Autocomplete)
 // PENTING: API Key ini hanya digunakan untuk memuat script Google Maps JavaScript API (untuk peta dan Autocomplete)
 // dan untuk menampilkan foto tempat. Panggilan Places API (Nearby Search, Place Details) akan melalui backend proxy.
-const Maps_API_KEY = "AIzaSyDrfbSE3kSnRccgRPB6vP9oQEU8LxCEFDA" // Gunakan API Key Anda di sini
+const Maps_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 // URL dasar untuk backend proxy Anda
 // Pastikan ini sesuai dengan port tempat backend Anda berjalan (misal: http://localhost:5000)

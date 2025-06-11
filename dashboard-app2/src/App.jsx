@@ -2,20 +2,21 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@chakra-ui/react'
 import { useState } from 'react'; // Import useState
 
-import Layout from './components/Layout'
-import Dashboard from './pages/Dashboard'
-import MapView from './pages/MapView'
-import CBAAnalytics from './pages/CBAAnalytics';
-import CBASelectionPage from './pages/CBASelectionPage'
-import Master from './pages/Master'
+import Layout from './components/Layout.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import MapView from './pages/MapView.jsx'
+import CBAAnalytics from './pages/CBAAnalytics.jsx';
+import CBASelectionPage from './pages/CBASelectionPage.jsx'
+import Master from './pages/Master.jsx'
 // Header diimpor di sini, tetapi kemungkinan besar dirender di dalam komponen Layout.
 // import Header from './components/Header' 
-import ATMCRMPage from './pages/ATMCRMPage'
-import CostPage from './pages/CostPage'
+import ApiTester from './ApiTester.jsx' // Import ApiTester untuk pengujian API
+import ATMCRMPage from './pages/ATMCRMPage.jsx'
+import CostPage from './pages/CostPage.jsx'
 import Relocation from './pages/Relocation.jsx'
-import Login from './pages/Login.jsx'
+import Login from './contexts/Login.jsx'
 import TrxFeePage from './pages/TRXFee.jsx'
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from '../src/contexts/AuthContext'; // Import useAuth untuk otentikasi
 import MachineDetail from './pages/MachineDetails.jsx'
 
 function App() {

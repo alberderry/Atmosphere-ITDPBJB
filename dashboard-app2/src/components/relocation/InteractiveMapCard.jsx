@@ -17,7 +17,7 @@ import {
 import { useEffect, useRef, useState, useCallback } from "react"
 import { CloseIcon } from "@chakra-ui/icons"; // Import CloseIcon
 
-const Maps_API_KEY = "AIzaSyDrfbSE3kSnRccgRPB6vP9oQEU8LxCEFDA"; // Pastikan API Key Anda di sini
+const Maps_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const InteractiveMapCard = ({
   cardBg,

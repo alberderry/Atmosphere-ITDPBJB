@@ -15,7 +15,7 @@ app.use(express.json()); // Untuk mengurai body JSON
 // Sangat disarankan untuk menyimpan API Key di variabel lingkungan
 // Pastikan ada file .env di folder yang sama dengan server.js dan tambahkan:
 // GOOGLE_MAPS_API_KEY="YOUR_GOOGLE_MAPS_API_KEY_HERE"
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || "YOUR_GOOGLE_MAPS_API_KEY_HERE"; // Ganti dengan API Key Anda
+const GOOGLE_MAPS_API_KEY = process.env.VITE_GOOGLE_MAPS_API_KEY || "YOUR_GOOGLE_MAPS_API_KEY_HERE"; // Ganti dengan API Key Anda
 
 // Root endpoint (opsional, hanya untuk memeriksa apakah server berjalan)
 app.get('/', (req, res) => {

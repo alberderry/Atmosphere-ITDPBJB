@@ -14,7 +14,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react"
-import { getBranchTypeIcon } from "../../../utils/relocationUtils" // Import helper
+import { getBranchTypeIcon } from "../../utils/relocationUtils" // Import helper
 
 const NearbyBranchesCard = ({
   cardBg,

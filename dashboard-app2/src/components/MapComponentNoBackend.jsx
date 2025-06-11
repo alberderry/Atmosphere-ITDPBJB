@@ -8,7 +8,7 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyDrfbSE3kSnRccgRPB6vP9oQEU8LxCEFDA'; // Gunaka
 // Lokasi default (Bandung)
 const DEFAULT_CENTER = { lat: -6.9200, lng: 107.6114 };
 
-const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTierColor dan activeView dihapus karena tidak relevan dengan data API
+const MapComponent = ({ atmLocations = [], getTierColor, activeView, userLocation = null }) => {
   const mapRef = useRef(null); // Ref untuk elemen div tempat peta akan dirender
   const mapInstanceRef = useRef(null); // Ref untuk instance peta Google Maps
   const markersRef = useRef([]); // Ref untuk menyimpan semua marker Google Maps
@@ -17,6 +17,12 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
   const [openAtmId, setOpenAtmId] = useState(null); // State untuk melacak ATM yang InfoWindow-nya terbuka
   const [infoWindowPixelPosition, setInfoWindowPixelPosition] = useState(null); // Posisi piksel InfoWindow kustom
+
+  // Helper untuk mendapatkan warna teks badge (untuk badge kuning agar teksnya gelap)
+  const getBadgeTextColor = (color) => {
+    if (color === 'yellow') return '#2D3748'; // gray.800
+    return '#FFFFFF'; // white
+  };
 
   // --- Memuat Google Maps API secara dinamis (jika belum dimuat) ---
   useEffect(() => {
@@ -124,7 +130,7 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
         console.log('Peta Google Maps telah di-cleanup.');
       }
     };
-  }, [isGoogleMapsLoaded, userLocation, CustomOverlay]);
+  }, [isGoogleMapsLoaded, userLocation, CustomOverlay]); // Tambahkan CustomOverlay ke dependensi
 
 
   // Helper untuk mengonversi LatLng ke koordinat piksel relatif terhadap kontainer peta
@@ -154,8 +160,7 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
     }
 
     const updatePosition = () => {
-      // Menggunakan latitude dan longitude langsung dari objek ATM
-      const latLng = new window.google.maps.LatLng(selectedAtm.latitude, selectedAtm.longitude);
+      const latLng = new window.google.maps.LatLng(selectedAtm.position.lat, selectedAtm.position.lng);
       const pixelPos = getPixelPosition(latLng);
       if (pixelPos) {
         setInfoWindowPixelPosition(pixelPos);
@@ -178,9 +183,9 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
   }, [openAtmId, isGoogleMapsLoaded, atmLocations, getPixelPosition]);
 
 
-  // --- Update Marker saat 'atmLocations' berubah ---
+  // --- Update Marker saat 'atmLocations' atau 'activeView' berubah ---
   useEffect(() => {
-    if (!isGoogleMapsLoaded || !mapInstanceRef.current) {
+    if (!isGoogleMapsLoaded || !mapInstanceRef.current || !getTierColor) {
       return;
     }
 
@@ -196,16 +201,38 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
 
     if (atmLocations.length > 0) {
       atmLocations.forEach(atm => {
-        // Menggunakan latitude dan longitude langsung dari objek ATM
-        const position = { lat: atm.latitude, lng: atm.longitude };
+        const { lat, lng } = atm.position;
+        const position = { lat, lng };
 
-        // Tentukan warna pin secara sederhana (misalnya, semua marker sama)
-        const markerColor = '#4299E1'; // Warna biru Chakra
+        // Tentukan warna pin berdasarkan tier atau fee
+        let markerColor = '';
+        if (activeView === 'Tier') {
+          markerColor = getTierColor(atm.tier);
+        } else if (activeView === 'Fee') {
+          const feeValue = parseFloat(atm.transactionMetrics.avgFeeValue.replace(/[^0-9.-]+/g,""));
+          if (feeValue >= 100000) {
+            markerColor = 'blue';
+          } else if (feeValue >= 50000) {
+            markerColor = 'green';
+          } else if (feeValue > 0) {
+            markerColor = 'yellow';
+          } else {
+            markerColor = 'gray';
+          }
+        }
 
         const pinSymbol = (color) => {
+          const hexColor = {
+            'blue': '#2C5282', // Chakra blue.700
+            'green': '#38A169', // Chakra green.500
+            'yellow': '#D69E2E', // Chakra yellow.500
+            'red': '#E53E3E', // Chakra red.500
+            'gray': '#A0AEC0' // Chakra gray.500
+          }[color] || '#A0AEC0';
+
           return {
             path: 'M 0,0 C -2,-20 -10,-9 -10,-22 A 10,10 0 1,1 10,-22 C 10,-9 2,-20 0,0 z',
-            fillColor: color,
+            fillColor: hexColor,
             fillOpacity: 1,
             strokeColor: '#000',
             strokeWeight: 0.5,
@@ -244,7 +271,7 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
       mapInstanceRef.current.setZoom(12);
     }
 
-  }, [atmLocations, isGoogleMapsLoaded, userLocation]); // activeView dan getTierColor dihapus dari dependensi
+  }, [atmLocations, isGoogleMapsLoaded, userLocation, getTierColor, activeView]);
 
   // --- Pindahkan peta ke lokasi pengguna saat pertama kali didapatkan ---
   useEffect(() => {
@@ -294,6 +321,7 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
             transform: 'translate(-50%, -100%)', // Menggeser InfoWindow agar berada di atas pin
             maxWidth: '280px', // Membatasi lebar agar konten melipat ke bawah
             minWidth: '250px', // Memastikan lebar minimum
+            // Tidak ada pengaturan tinggi atau overflow eksplisit di sini
           }}
         >
           <Flex
@@ -305,20 +333,18 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
             borderColor="gray.100"
             borderTopRadius="lg"
           >
-            {/* Menampilkan tipe ATM dan nama */}
             <Text fontSize="sm" fontWeight="bold" color="gray.800">
               {currentAtmForInfoWindow.type} {currentAtmForInfoWindow.name}
             </Text>
-            {/* Menampilkan kode mesin */}
             <Badge
-              bg="blue.500" // Warna default untuk badge
-              color="white"
+              bg={getTierColor(currentAtmForInfoWindow.tier)}
+              color={getBadgeTextColor(getTierColor(currentAtmForInfoWindow.tier))}
               borderRadius="full"
               fontSize="xs"
               px={2}
               py={1}
             >
-              {currentAtmForInfoWindow.code} {/* Menggunakan currentAtmForInfoWindow.code dari API */}
+              {currentAtmForInfoWindow.machineCode}
             </Badge>
             <IconButton
               icon={<CloseIcon />}
@@ -329,19 +355,35 @@ const MapComponent = ({ atmLocations = [], userLocation = null }) => { // getTie
             />
           </Flex>
           <Box p="15px">
-            {/* Menampilkan alamat ATM */}
             <Text fontSize="xs" color="gray.700" mb="10px">
               {currentAtmForInfoWindow.address}
             </Text>
 
-            {/* Bagian Detail */}
+            <Flex align="center" mb="10px" pb="10px" borderBottom="1px solid" borderColor="gray.100">
+              <Text mr="8px" color="#4299E1">&#x21BB;</Text> {/* Icon for Transaction Metrics */}
+              <Text fontSize="sm" fontWeight="bold" color="gray.800">Transaction Metrics</Text>
+            </Flex>
+            <Text fontSize="xs" color="gray.700" ml="20px" mb="3px">
+              <strong>Avg Transaction:</strong> {currentAtmForInfoWindow.transactionMetrics.avgTransaction}
+            </Text>
+
+            <Flex align="center" mt="15px" mb="10px" pb="10px" borderBottom="1px solid" borderColor="gray.100">
+              <Text mr="8px" color="#4299E1">&#xFE49;</Text> {/* Icon for Fee Structure */}
+              <Text fontSize="sm" fontWeight="bold" color="gray.800">Fee Structure</Text>
+            </Flex>
+            <Text fontSize="xs" color="gray.700" ml="20px" mb="3px">
+              <strong>Avg Fee:</strong> {currentAtmForInfoWindow.transactionMetrics.avgFeeValue}
+            </Text>
+
             <Flex align="center" mt="15px" mb="10px" pb="10px" borderBottom="1px solid" borderColor="gray.100">
               <Text mr="8px" color="#4299E1">&#x2302;</Text> {/* Icon for Details */}
               <Text fontSize="sm" fontWeight="bold" color="gray.800">Details</Text>
             </Flex>
-            {/* Menampilkan Kantor Induk dari branch_id */}
             <Text fontSize="xs" color="gray.700" ml="20px" mb="3px">
-              <strong>Kantor Induk:</strong> {currentAtmForInfoWindow.branch_id.name}
+              <strong>Kantor Induk:</strong> {currentAtmForInfoWindow.details.kantorInduk}
+            </Text>
+            <Text fontSize="xs" color="gray.700" ml="20px" mb="0">
+              <strong>Kanwil:</strong> {currentAtmForInfoWindow.details.kanwil}
             </Text>
           </Box>
         </Box>

@@ -1,7 +1,7 @@
 // src/components/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useAuth(); // Dapatkan status otentikasi

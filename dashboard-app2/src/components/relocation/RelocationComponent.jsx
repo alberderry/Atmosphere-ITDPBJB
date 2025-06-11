@@ -12,21 +12,21 @@ import {
 } from "@chakra-ui/react"
 
 // Import komponen-komponen yang telah dipisahkan
-import RelocationHeader from "./superuser/relocation/RelocationHeader"
-import LocationSearchCard from "./superuser/relocation/LocationSearchCard"
-import InteractiveMapCard from "./superuser/relocation/InteractiveMapCard" // Jalur import yang benar
-import NearbyBranchesCard from "./superuser/relocation/NearbyBranchesCard"
-import NearbyCommonPlacesCard from "./superuser/relocation/NearbyCommonPlacesCard"
-import CBAAnalysisResultCards from "./superuser/relocation/CBAAnalysisResultCards"
-import RelocationInstructions from "./superuser/relocation/RelocationInstructions"
-import CostInputCard from "./superuser/relocation/CostInputCard";
-import NearbyOtherBanksCard from "./superuser/relocation/NearbyOtherBankCards"
+import RelocationHeader from "../relocation/RelocationHeader"
+import LocationSearchCard from "../relocation/LocationSearchCard"
+import InteractiveMapCard from "../relocation/InteractiveMapCard" // Jalur import yang benar
+import NearbyBranchesCard from "../relocation/NearbyBranchesCard"
+import NearbyCommonPlacesCard from "../relocation/NearbyCommonPlacesCard"
+import CBAAnalysisResultCards from "../relocation/CBAAnalysisResultCards"
+import RelocationInstructions from "../relocation/RelocationInstructions"
+import CostInputCard from "../relocation/CostInputCard";
+import NearbyOtherBanksCard from "../relocation/NearbyOtherBankCards"
 
 // Import fungsi-fungsi utilitas
-import { calculateDistance } from "../utils/relocationUtils"
+import { calculateDistance } from "../../utils/relocationUtils"
 
 // Google Maps API Key untuk penggunaan di frontend (memuat script peta dan Autocomplete)
-const Maps_API_KEY = "AIzaSyDrfbSE3kSnRccgRPB6vP9oQEU8LxCEFDA" 
+const Maps_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 // URL dasar untuk backend proxy Anda
 const BACKEND_BASE_URL = "http://localhost:5000"

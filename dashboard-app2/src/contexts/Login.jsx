@@ -16,7 +16,7 @@ import {
   Center,
 } from "@chakra-ui/react"
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import { useAuth } from './AuthContext'; // Import useAuth untuk mendapatkan fungsi login
 
 const Login = () => {
   const [email, setEmail] = useState("")

@@ -19,7 +19,7 @@ import {
   Spinner // Import Spinner
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import MapComponent from '../components/MapComponent';
+import MapComponent from '../../components/MapComponent';
 
 const MapView = () => {
   // const [activeView, ] = useState('Tier'); // Dihapus karena tidak digunakan
@@ -41,8 +41,7 @@ const MapView = () => {
         // Menggunakan URL API penuh tanpa proxy
         const response = await fetch('http://saving-quietly-buffalo.ngrok-free.app/api/atms?branch_id&limit=20&page&search&sortDir', {
           headers: {
-            'Authorization': `Bearer ${AUTH_TOKEN}`, // Menambahkan header Authorization
-            "ngrok-skip-browser-warning": "true", // Menambahkan header untuk ngrok
+            'Authorization': `Bearer ${AUTH_TOKEN}` // Menambahkan header Authorization
           }
         });
 
